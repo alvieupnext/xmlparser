@@ -24,7 +24,6 @@ public class ArticleHandler extends DefaultHandler {
         if (qName.equalsIgnoreCase("article")) {
             // new staff
             currentArticle = new Article();
-            System.out.println(attributes.getValue("key"));
             currentArticle.setId(attributes.getValue("key"));
         }
 //        System.out.print("kaas");
