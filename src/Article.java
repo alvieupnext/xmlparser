@@ -7,7 +7,7 @@ public class Article {
     private String title;
     private String pages;
     private int year;
-    private String Book;
+    private String booktitle;
 
     public String getKey() {
         return key;
@@ -49,12 +49,12 @@ public class Article {
         this.year = year;
     }
 
-    public String getBook() {
-        return Book;
+    public String getBooktitle() {
+        return booktitle;
     }
 
-    public void setBook(String book) {
-        Book = book;
+    public void setBooktitle(String booktitle) {
+        this.booktitle = booktitle;
     }
 
     @Override
@@ -65,7 +65,7 @@ public class Article {
                 ", title='" + title + '\'' +
                 ", pages='" + pages + '\'' +
                 ", year=" + year +
-                ", Book='" + Book + '\'' +
+                ", Booktitle='" + booktitle + '\'' +
                 '}';
     }
 }

@@ -45,8 +45,8 @@ public class ArticleHandler extends DefaultHandler {
         if (qName.equalsIgnoreCase("year")){
             currentArticle.setYear(Integer.parseInt(currentValue.toString()));
         }
-        if (qName.equalsIgnoreCase("book")){
-            currentArticle.setBook(currentValue.toString());
+        if (qName.equalsIgnoreCase("booktitle")){
+            currentArticle.setBooktitle(currentValue.toString());
         }
 
         // end of article
