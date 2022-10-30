@@ -65,7 +65,7 @@ public class Article {
                 ", title='" + title + '\'' +
                 ", pages='" + pages + '\'' +
                 ", year=" + year +
-                ", Booktitle='" + booktitle + '\'' +
+                ", booktitle='" + booktitle + '\'' +
                 '}';
     }
 }
