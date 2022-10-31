@@ -6,7 +6,7 @@ public class Article {
     private String title;
     private String journal;
     private String volume;
-    private int number;
+    private String number;
     private int year;
 
     @Override
@@ -41,11 +41,11 @@ public class Article {
         this.volume = volume;
     }
 
-    public int getNumber() {
+    public String getNumber() {
         return number;
     }
 
-    public void setNumber(int number) {
+    public void setNumber(String number) {
         this.number = number;
     }
 

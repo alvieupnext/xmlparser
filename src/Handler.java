@@ -106,7 +106,7 @@ public class Handler extends DefaultHandler {
                 currentArticle.setVolume(currentValue.toString());
             }
             if (qName.equalsIgnoreCase("number")){
-                currentArticle.setNumber(Integer.parseInt(currentValue.toString()));
+                currentArticle.setNumber(currentValue.toString());
             }
             if (qName.equalsIgnoreCase("year")){
                 currentArticle.setYear(Integer.parseInt(currentValue.toString()));
