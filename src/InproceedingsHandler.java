@@ -8,11 +8,11 @@ import java.util.List;
 public class InproceedingsHandler extends DefaultHandler {
 
     private StringBuilder currentValue = new StringBuilder();
-    private List<Inproceedings> list = new ArrayList<>();
+    private List<Inproceedings> inproceedingsList = new ArrayList<>();
     Inproceedings currentInproceeding;
 
-    public List<Inproceedings> getList() {
-        return list;
+    public List<Inproceedings> getInproceedingsList() {
+        return inproceedingsList;
     }
 
     boolean inproceeding = false;
@@ -54,7 +54,7 @@ public class InproceedingsHandler extends DefaultHandler {
         }
         // end of article
         if (qName.equalsIgnoreCase("inproceedings")) {
-            list.add(currentInproceeding);
+            inproceedingsList.add(currentInproceeding);
             inproceeding = false;
         }
 
