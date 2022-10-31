@@ -9,11 +9,13 @@ public class InproceedingsHandler extends DefaultHandler {
 
     private StringBuilder currentValue = new StringBuilder();
     private List<Inproceedings> list = new ArrayList<>();
-    Inproceedings currentArticle;
+    Inproceedings currentInproceeding;
 
     public List<Inproceedings> getList() {
         return list;
     }
+
+    boolean inproceeding = false;
 
     @Override
     public void startElement(String uri, String localName, String qName,
@@ -21,10 +23,11 @@ public class InproceedingsHandler extends DefaultHandler {
         // reset the tag value
         currentValue.setLength(0);
 
-        if (qName.equalsIgnoreCase("article")) {
-            // new staff
-            currentArticle = new Inproceedings();
-            currentArticle.setId(attributes.getValue("key"));
+        if (qName.equalsIgnoreCase("inproceedings")) {
+            // new inproceeding
+            currentInproceeding = new Inproceedings();
+            currentInproceeding.setKey(attributes.getValue("key"));
+            inproceeding = true;
         }
 //        System.out.print("kaas");
     }
@@ -32,25 +35,27 @@ public class InproceedingsHandler extends DefaultHandler {
     @Override
     public void endElement(String uri, String localName, String qName)
             throws SAXException {
-        if (qName.equalsIgnoreCase("author")){
-            currentArticle.addAuthor(currentValue.toString());
+        if (inproceeding){
+            if (qName.equalsIgnoreCase("author")){
+                currentInproceeding.addAuthor(currentValue.toString());
+            }
+            if (qName.equalsIgnoreCase("title")){
+                currentInproceeding.setTitle(currentValue.toString());
+            }
+            if (qName.equalsIgnoreCase("pages")){
+                currentInproceeding.setPages(currentValue.toString());
+            }
+            if (qName.equalsIgnoreCase("year")){
+                currentInproceeding.setYear(Integer.parseInt(currentValue.toString()));
+            }
+            if (qName.equalsIgnoreCase("booktitle")){
+                currentInproceeding.setBooktitle(currentValue.toString());
+            }
         }
-        if (qName.equalsIgnoreCase("title")){
-            currentArticle.setTitle(currentValue.toString());
-        }
-        if (qName.equalsIgnoreCase("pages")){
-            currentArticle.setPages(currentValue.toString());
-        }
-        if (qName.equalsIgnoreCase("year")){
-            currentArticle.setYear(Integer.parseInt(currentValue.toString()));
-        }
-        if (qName.equalsIgnoreCase("booktitle")){
-            currentArticle.setBooktitle(currentValue.toString());
-        }
-
         // end of article
-        if (qName.equalsIgnoreCase("article")) {
-            list.add(currentArticle);
+        if (qName.equalsIgnoreCase("inproceedings")) {
+            list.add(currentInproceeding);
+            inproceeding = false;
         }
 
     }

@@ -13,7 +13,7 @@ public class Inproceedings {
         return key;
     }
 
-    public void setId(String id) {
+    public void setKey(String id) {
         this.key = id;
     }
 
