@@ -5,13 +5,13 @@ import org.xml.sax.helpers.DefaultHandler;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ArticleHandler extends DefaultHandler {
+public class InproceedingsHandler extends DefaultHandler {
 
     private StringBuilder currentValue = new StringBuilder();
-    private List<Article> list = new ArrayList<>();
-    Article currentArticle;
+    private List<Inproceedings> list = new ArrayList<>();
+    Inproceedings currentArticle;
 
-    public List<Article> getList() {
+    public List<Inproceedings> getList() {
         return list;
     }
 
@@ -23,7 +23,7 @@ public class ArticleHandler extends DefaultHandler {
 
         if (qName.equalsIgnoreCase("article")) {
             // new staff
-            currentArticle = new Article();
+            currentArticle = new Inproceedings();
             currentArticle.setId(attributes.getValue("key"));
         }
 //        System.out.print("kaas");

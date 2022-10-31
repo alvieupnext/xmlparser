@@ -8,7 +8,7 @@ public class Proceedings {
     private String booktitle;
     private String publisher;
     private String volume;
-    private String pages;
+    private int year;
 
     public void setKey(String key) {
         this.key = key;
@@ -54,14 +54,6 @@ public class Proceedings {
         this.title = title;
     }
 
-    public String getPages() {
-        return pages;
-    }
-
-    public void setPages(String pages) {
-        this.pages = pages;
-    }
-
     public int getYear() {
         return year;
     }
@@ -87,7 +79,7 @@ public class Proceedings {
                 ", booktitle='" + booktitle + '\'' +
                 ", publisher='" + publisher + '\'' +
                 ", volume='" + volume + '\'' +
-                ", pages='" + pages + '\'' +
+                ", year='" + year + '\'' +
                 '}';
     }
 }
