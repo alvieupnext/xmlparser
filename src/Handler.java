@@ -5,7 +5,7 @@ import org.xml.sax.helpers.DefaultHandler;
 import java.util.ArrayList;
 import java.util.List;
 
-public class InproceedingsHandler extends DefaultHandler {
+public class Handler extends DefaultHandler {
 
     private StringBuilder currentValue = new StringBuilder();
     private List<Inproceedings> inproceedingsList = new ArrayList<>();
@@ -48,6 +48,11 @@ public class InproceedingsHandler extends DefaultHandler {
             currentProceeding.setKey(attributes.getValue("key"));
             current = "proceedings";
         }
+        if (qName.equalsIgnoreCase("article")){
+            currentArticle = new Article();
+            currentArticle.setKey(attributes.getValue("key"));
+            current = "article";
+        }
     }
 
     @Override
@@ -89,7 +94,23 @@ public class InproceedingsHandler extends DefaultHandler {
             if (qName.equalsIgnoreCase("year")){
                 currentProceeding.setYear(Integer.parseInt(currentValue.toString()));
             }
-
+        }
+        if (current == "article"){
+            if(qName.equalsIgnoreCase("title")){
+                currentArticle.setTitle(currentValue.toString());
+            }
+            if(qName.equalsIgnoreCase("journal")){
+                currentArticle.setJournal(currentValue.toString());
+            }
+            if (qName.equalsIgnoreCase("volume")){
+                currentArticle.setVolume(currentValue.toString());
+            }
+            if (qName.equalsIgnoreCase("number")){
+                currentArticle.setNumber(Integer.parseInt(currentValue.toString()));
+            }
+            if (qName.equalsIgnoreCase("year")){
+                currentArticle.setYear(Integer.parseInt(currentValue.toString()));
+            }
         }
         // end of article
         if (qName.equalsIgnoreCase("inproceedings")) {
@@ -98,6 +119,10 @@ public class InproceedingsHandler extends DefaultHandler {
         }
         if (qName.equalsIgnoreCase("proceedings")) {
             proceedingsList.add(currentProceeding);
+            current = "none";
+        }
+        if (qName.equalsIgnoreCase("article")){
+            articleList.add(currentArticle);
             current = "none";
         }
 

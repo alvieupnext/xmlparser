@@ -9,11 +9,11 @@ public class XMLToCSV {
         SAXParserFactory factory = SAXParserFactory.newInstance();
         factory.setValidating(true);
         SAXParser saxParser = factory.newSAXParser();
-        InproceedingsHandler inproceedingsHandler = new InproceedingsHandler();
-        saxParser.parse("dblp.xml", inproceedingsHandler);
-        List<Inproceedings> inproceedings = inproceedingsHandler.getInproceedingsList();
+        Handler handler = new Handler();
+        saxParser.parse("dblp.xml", handler);
+        List<Inproceedings> inproceedings = handler.getInproceedingsList();
         inproceedings.forEach(System.out::println);
-        List<Proceedings> proceedings = inproceedingsHandler.getProceedingsList();
+        List<Proceedings> proceedings = handler.getProceedingsList();
         proceedings.forEach(System.out::println);
     }
 
