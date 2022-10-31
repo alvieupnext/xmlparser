@@ -15,6 +15,8 @@ public class XMLToCSV {
         inproceedings.forEach(System.out::println);
         List<Proceedings> proceedings = handler.getProceedingsList();
         proceedings.forEach(System.out::println);
+        List <Article> articles = handler.getArticleList();
+        articles.forEach(System.out::println);
     }
 
 }
