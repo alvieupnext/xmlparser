@@ -3,11 +3,51 @@ import java.util.List;
 
 public class Article {
     private String key;
-    private List<String> authors = new ArrayList<>();
     private String title;
-    private String pages;
+    private String journal;
+    private String volume;
+    private int number;
     private int year;
-    private String booktitle;
+
+    @Override
+    public String toString() {
+        return "Journal Article{" +
+                "key='" + key + '\'' +
+                ", title='" + title + '\'' +
+                ", journal='" + journal + '\'' +
+                ", volume='" + volume + '\'' +
+                ", number=" + number +
+                ", year=" + year +
+                '}';
+    }
+
+    public void setKey(String key) {
+        this.key = key;
+    }
+
+    public String getJournal() {
+        return journal;
+    }
+
+    public void setJournal(String journal) {
+        this.journal = journal;
+    }
+
+    public String getVolume() {
+        return volume;
+    }
+
+    public void setVolume(String volume) {
+        this.volume = volume;
+    }
+
+    public int getNumber() {
+        return number;
+    }
+
+    public void setNumber(int number) {
+        this.number = number;
+    }
 
     public String getKey() {
         return key;
@@ -15,14 +55,6 @@ public class Article {
 
     public void setId(String id) {
         this.key = id;
-    }
-
-    public List<String> getAuthors() {
-        return authors;
-    }
-
-    public void addAuthor(String author) {
-        this.authors.add(author);
     }
 
     public String getTitle() {
@@ -33,39 +65,11 @@ public class Article {
         this.title = title;
     }
 
-    public String getPages() {
-        return pages;
-    }
-
-    public void setPages(String pages) {
-        this.pages = pages;
-    }
-
     public int getYear() {
         return year;
     }
 
     public void setYear(int year) {
         this.year = year;
-    }
-
-    public String getBooktitle() {
-        return booktitle;
-    }
-
-    public void setBooktitle(String booktitle) {
-        this.booktitle = booktitle;
-    }
-
-    @Override
-    public String toString() {
-        return "Article{" +
-                "key='" + key + '\'' +
-                ", authors=" + authors +
-                ", title='" + title + '\'' +
-                ", pages='" + pages + '\'' +
-                ", year=" + year +
-                ", booktitle='" + booktitle + '\'' +
-                '}';
     }
 }
