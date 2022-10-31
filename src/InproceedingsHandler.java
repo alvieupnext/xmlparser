@@ -9,13 +9,26 @@ public class InproceedingsHandler extends DefaultHandler {
 
     private StringBuilder currentValue = new StringBuilder();
     private List<Inproceedings> inproceedingsList = new ArrayList<>();
+    private List<Article> articleList = new ArrayList<>();
+    private List<Proceedings> proceedingsList = new ArrayList<>();
+
     Inproceedings currentInproceeding;
+    Article currentArticle;
+    Proceedings currentProceeding;
 
     public List<Inproceedings> getInproceedingsList() {
         return inproceedingsList;
     }
 
-    boolean inproceeding = false;
+    public List<Article> getArticleList() {
+        return articleList;
+    }
+
+    public List<Proceedings> getProceedingsList() {
+        return proceedingsList;
+    }
+
+    String current = "none";
 
     @Override
     public void startElement(String uri, String localName, String qName,
@@ -27,15 +40,20 @@ public class InproceedingsHandler extends DefaultHandler {
             // new inproceeding
             currentInproceeding = new Inproceedings();
             currentInproceeding.setKey(attributes.getValue("key"));
-            inproceeding = true;
+            current = "inproceedings";
         }
-//        System.out.print("kaas");
+        if (qName.equalsIgnoreCase("proceedings")){
+            //new proceeding
+            currentProceeding = new Proceedings();
+            currentProceeding.setKey(attributes.getValue("key"));
+            current = "proceedings";
+        }
     }
 
     @Override
     public void endElement(String uri, String localName, String qName)
             throws SAXException {
-        if (inproceeding){
+        if (current == "inproceedings"){
             if (qName.equalsIgnoreCase("author")){
                 currentInproceeding.addAuthor(currentValue.toString());
             }
@@ -52,11 +70,37 @@ public class InproceedingsHandler extends DefaultHandler {
                 currentInproceeding.setBooktitle(currentValue.toString());
             }
         }
+        if (current == "proceedings"){
+            if (qName.equalsIgnoreCase("editor")){
+                currentProceeding.addEditor(currentValue.toString());
+            }
+            if (qName.equalsIgnoreCase("title")){
+                currentProceeding.setTitle(currentValue.toString());
+            }
+            if (qName.equalsIgnoreCase("booktitle")){
+                currentProceeding.setBooktitle(currentValue.toString());
+            }
+            if (qName.equalsIgnoreCase("publisher")){
+                currentProceeding.setPublisher(currentValue.toString());
+            }
+            if (qName.equalsIgnoreCase("volume")){
+                currentProceeding.setVolume(currentValue.toString());
+            }
+            if (qName.equalsIgnoreCase("year")){
+                currentProceeding.setYear(Integer.parseInt(currentValue.toString()));
+            }
+
+        }
         // end of article
         if (qName.equalsIgnoreCase("inproceedings")) {
             inproceedingsList.add(currentInproceeding);
-            inproceeding = false;
+            current = "none";
         }
+        if (qName.equalsIgnoreCase("proceedings")) {
+            proceedingsList.add(currentProceeding);
+            current = "none";
+        }
+
 
     }
 

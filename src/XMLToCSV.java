@@ -11,8 +11,10 @@ public class XMLToCSV {
         SAXParser saxParser = factory.newSAXParser();
         InproceedingsHandler inproceedingsHandler = new InproceedingsHandler();
         saxParser.parse("dblp.xml", inproceedingsHandler);
-        List<Inproceedings> articles = inproceedingsHandler.getInproceedingsList();
-        articles.forEach(System.out::println);
+        List<Inproceedings> inproceedings = inproceedingsHandler.getInproceedingsList();
+        inproceedings.forEach(System.out::println);
+        List<Proceedings> proceedings = inproceedingsHandler.getProceedingsList();
+        proceedings.forEach(System.out::println);
     }
 
 }
