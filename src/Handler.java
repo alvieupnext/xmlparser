@@ -2,34 +2,32 @@ import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 
 public class Handler extends DefaultHandler {
 
     private StringBuilder currentValue = new StringBuilder();
-    private List<Inproceedings> inproceedingsList = new ArrayList<>();
-    private List<Article> articleList = new ArrayList<>();
-    private List<Proceedings> proceedingsList = new ArrayList<>();
+    private List<String[]> inproceedingsList = new ArrayList<>();
+    private List<String[]> articleList = new ArrayList<>();
+    private List<String[]> proceedingsList = new ArrayList<>();
 
     Inproceedings currentInproceeding;
     Article currentArticle;
     Proceedings currentProceeding;
 
-    public List<Inproceedings> getInproceedingsList() {
-        return inproceedingsList;
-    }
+    public List<String[]> getInproceedingsList() { return inproceedingsList; }
 
-    public List<Article> getArticleList() {
+    public List<String[]> getArticleList() {
         return articleList;
     }
 
-    public List<Proceedings> getProceedingsList() {
+    public List<String[]> getProceedingsList() {
         return proceedingsList;
     }
 
     String current = "none";
-
     @Override
     public void startElement(String uri, String localName, String qName,
                              Attributes attributes) throws SAXException {
@@ -114,19 +112,55 @@ public class Handler extends DefaultHandler {
         }
         // end of article
         if (qName.equalsIgnoreCase("inproceedings")) {
-            inproceedingsList.add(currentInproceeding);
+            String [] inproceedingString = {
+                    currentInproceeding.getClass().toString(),
+                    currentInproceeding.getKey(),
+                    currentInproceeding.getAuthors().toString(),
+                    currentInproceeding.getTitle(),
+                    currentInproceeding.getPages(),
+                    Integer.toString(currentInproceeding.getYear()),
+                    currentInproceeding.getBooktitle()
+            };
+            inproceedingsList.add(inproceedingString);
+            System.out.println(inproceedingString);
             current = "none";
         }
         if (qName.equalsIgnoreCase("proceedings")) {
-            proceedingsList.add(currentProceeding);
+            String [] proceedingsString = {
+                    currentProceeding.getClass().toString(),
+                    currentProceeding.getKey(),
+                    currentProceeding.getEditors().toString(),
+                    currentProceeding.getTitle(),
+                    currentProceeding.getBooktitle(),
+                    currentProceeding.getPublisher(),
+                    currentProceeding.getVolume(),
+                    Integer.toString(currentProceeding.getYear())
+            };
+            proceedingsList.add(proceedingsString);
             current = "none";
         }
         if (qName.equalsIgnoreCase("article")){
-            articleList.add(currentArticle);
+            String[] articleString = {
+                    currentArticle.getClass().toString(),
+                    currentArticle.getKey(),
+                    currentArticle.getTitle(),
+                    currentArticle.getJournal(),
+                    currentArticle.getVolume(),
+                    currentArticle.getNumber(),
+                    Integer.toString(currentArticle.getYear())
+            };
+            articleList.add(articleString);
             current = "none";
         }
+    }
 
-
+    public void initializeHeaders() {
+        String[] articleHeader = {"Class Name", "Key", "Title", "Journal", "Volume", "Number", "Year"};
+        articleList.add(articleHeader);
+        String[] inproceedingHeader = {"Class Name", "Key", "Authors", "Title", "Pages", "Year", "Booktitle"};
+        inproceedingsList.add(inproceedingHeader);
+        String[] proceedingsHeader = {"Class Name", "Key", "Editors", "Title", "Booktitle", "Publisher", "Volume", "Year"};
+        proceedingsList.add(proceedingsHeader);
     }
 
     public void characters(char ch[], int start, int length) {
