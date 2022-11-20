@@ -7,6 +7,16 @@ public class Article {
     private String journal;
     private String volume;
     private String number;
+    private String author;
+
+    public String getAuthor() {
+        return author;
+    }
+
+    public void setAuthor(String author) {
+        this.author = author;
+    }
+
     private int year;
 
     @Override
@@ -14,6 +24,7 @@ public class Article {
         return "Journal Article{" +
                 "key='" + key + '\'' +
                 ", title='" + title + '\'' +
+                ", author='" + author +  '\'' +
                 ", journal='" + journal + '\'' +
                 ", volume='" + volume + '\'' +
                 ", number=" + number +
