@@ -7,14 +7,14 @@ public class Article {
     private String journal;
     private String volume;
     private String number;
-    private String author;
+    private List<String> authors = new ArrayList<>();
 
-    public String getAuthor() {
-        return author;
+    public List<String> getAuthors() {
+        return authors;
     }
 
-    public void setAuthor(String author) {
-        this.author = author;
+    public void addAuthor(String author) {
+        this.authors.add(author);
     }
 
     private int year;
@@ -23,8 +23,8 @@ public class Article {
     public String toString() {
         return "Journal Article{" +
                 "key='" + key + '\'' +
+                ", author='" + authors +  '\'' +
                 ", title='" + title + '\'' +
-                ", author='" + author +  '\'' +
                 ", journal='" + journal + '\'' +
                 ", volume='" + volume + '\'' +
                 ", number=" + number +

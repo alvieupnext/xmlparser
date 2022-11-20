@@ -97,6 +97,9 @@ public class Handler extends DefaultHandler {
             if(qName.equalsIgnoreCase("title")){
                 currentArticle.setTitle(currentValue.toString());
             }
+            if(qName.equalsIgnoreCase("author")){
+                currentArticle.addAuthor(currentValue.toString());
+            }
             if(qName.equalsIgnoreCase("journal")){
                 currentArticle.setJournal(currentValue.toString());
             }
@@ -143,6 +146,7 @@ public class Handler extends DefaultHandler {
             String[] articleString = {
                     currentArticle.getClass().toString(),
                     currentArticle.getKey(),
+                    currentInproceeding.getAuthors().toString(),
                     currentArticle.getTitle(),
                     currentArticle.getJournal(),
                     currentArticle.getVolume(),
@@ -155,7 +159,7 @@ public class Handler extends DefaultHandler {
     }
 
     public void initializeHeaders() {
-        String[] articleHeader = {"Class Name", "Key", "Title", "Journal", "Volume", "Number", "Year"};
+        String[] articleHeader = {"Class Name", "Key","Authors", "Title", "Journal", "Volume", "Number", "Year"};
         articleList.add(articleHeader);
         String[] inproceedingHeader = {"Class Name", "Key", "Authors", "Title", "Pages", "Year", "Booktitle"};
         inproceedingsList.add(inproceedingHeader);
