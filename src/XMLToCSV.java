@@ -6,18 +6,6 @@ import java.util.List;
 import com.opencsv.CSVWriter;
 import java.io.File;
 import java.io.FileWriter;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.io.PrintWriter;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.*;
-import java.util.List;
-import java.util.LinkedList;
-import java.io.*;
-import java.util.List;
-import java.util.ArrayList;
 
 public class XMLToCSV {
     public static void makeFile(String fileName, List<String[]> listOfElements) {
@@ -41,7 +29,7 @@ public class XMLToCSV {
         SAXParser saxParser = factory.newSAXParser();
         Handler handler = new Handler();
         handler.initializeHeaders();
-        saxParser.parse("testdoc.xml", handler);
+        saxParser.parse("dblp.xml", handler);
         makeFile("article.csv", handler.getArticleList());
         makeFile("inprocedings.csv", handler.getInproceedingsList());
         makeFile("procedings.csv", handler.getProceedingsList());
