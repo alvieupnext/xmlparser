@@ -146,7 +146,7 @@ public class Handler extends DefaultHandler {
             String[] articleString = {
                     currentArticle.getClass().toString(),
                     currentArticle.getKey(),
-                    currentInproceeding.getAuthors().toString(),
+                    currentArticle.getAuthors().toString(),
                     currentArticle.getTitle(),
                     currentArticle.getJournal(),
                     currentArticle.getVolume(),
