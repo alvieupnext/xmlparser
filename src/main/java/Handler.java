@@ -13,6 +13,18 @@ public class Handler extends DefaultHandler {
     private List<String[]> articleList = new ArrayList<>();
     private List<String[]> proceedingsList = new ArrayList<>();
 
+    //method to remove last character
+    private String removeLastChar(String s)
+    {
+        if (s.length() == 1){
+            return s;
+        }
+        else {
+            //returns the string after removing the last character
+            return s.substring(0, s.length() - 1);
+        }
+    }
+
     Inproceedings currentInproceeding;
     Article currentArticle;
     Proceedings currentProceeding;
@@ -91,8 +103,8 @@ public class Handler extends DefaultHandler {
             }
             if (qName.equalsIgnoreCase("year")){
                 currentProceeding.setYear(Integer.parseInt(currentValue.toString()));
-            }
-        }
+    }
+}
         if (current == "article"){
             if(qName.equalsIgnoreCase("title")){
                 currentArticle.setTitle(currentValue.toString());
@@ -115,10 +127,14 @@ public class Handler extends DefaultHandler {
         }
         // end of article
         if (qName.equalsIgnoreCase("inproceedings")) {
+            String authorsString = "[";
+            for (int i = 0; i < currentInproceeding.getAuthors().size(); i++){
+                authorsString  = authorsString + "\"" + currentInproceeding.getAuthors().get(i).replace("\"", "\'") + "\"" + ",";
+            }
+            authorsString = removeLastChar(authorsString) + "]";
             String [] inproceedingString = {
-                    currentInproceeding.getClass().toString(),
                     currentInproceeding.getKey(),
-                    currentInproceeding.getAuthors().toString(),
+                    authorsString,
                     currentInproceeding.getTitle(),
                     currentInproceeding.getPages(),
                     Integer.toString(currentInproceeding.getYear()),
@@ -129,10 +145,14 @@ public class Handler extends DefaultHandler {
             current = "none";
         }
         if (qName.equalsIgnoreCase("proceedings")) {
+            String editorsString = "[";
+            for (int i = 0; i < currentProceeding.getEditors().size(); i++){
+                editorsString = editorsString + "\"" + currentProceeding.getEditors().get(i).replace("\"", "\'") + "\"" + ",";
+            }
+            editorsString = removeLastChar(editorsString) + "]";
             String [] proceedingsString = {
-                    currentProceeding.getClass().toString(),
                     currentProceeding.getKey(),
-                    currentProceeding.getEditors().toString(),
+                    editorsString,
                     currentProceeding.getTitle(),
                     currentProceeding.getBooktitle(),
                     currentProceeding.getPublisher(),
@@ -143,10 +163,14 @@ public class Handler extends DefaultHandler {
             current = "none";
         }
         if (qName.equalsIgnoreCase("article")){
+            String authorsString = "[";
+            for (int i = 0; i < currentArticle.getAuthors().size(); i++){
+                authorsString  = authorsString + "\"" + currentArticle.getAuthors().get(i).replace("\"", "\'") + "\"" + ",";
+            }
+            authorsString = removeLastChar(authorsString) + "]";
             String[] articleString = {
-                    currentArticle.getClass().toString(),
                     currentArticle.getKey(),
-                    currentArticle.getAuthors().toString(),
+                    authorsString,
                     currentArticle.getTitle(),
                     currentArticle.getJournal(),
                     currentArticle.getVolume(),
@@ -159,11 +183,11 @@ public class Handler extends DefaultHandler {
     }
 
     public void initializeHeaders() {
-        String[] articleHeader = {"Class Name", "Key","Authors", "Title", "Journal", "Volume", "Number", "Year"};
+        String[] articleHeader = {"key","authors", "title", "journal", "volume", "number", "year"};
         articleList.add(articleHeader);
-        String[] inproceedingHeader = {"Class Name", "Key", "Authors", "Title", "Pages", "Year", "Booktitle"};
+        String[] inproceedingHeader = {"key", "authors", "title", "pages", "year", "booktitle"};
         inproceedingsList.add(inproceedingHeader);
-        String[] proceedingsHeader = {"Class Name", "Key", "Editors", "Title", "Booktitle", "Publisher", "Volume", "Year"};
+        String[] proceedingsHeader = {"key", "editors", "title", "booktitle", "publisher", "volume", "year"};
         proceedingsList.add(proceedingsHeader);
     }
 
