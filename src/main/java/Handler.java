@@ -103,8 +103,8 @@ public class Handler extends DefaultHandler {
             }
             if (qName.equalsIgnoreCase("year")){
                 currentProceeding.setYear(Integer.parseInt(currentValue.toString()));
-            }
-        }
+    }
+}
         if (current == "article"){
             if(qName.equalsIgnoreCase("title")){
                 currentArticle.setTitle(currentValue.toString());
