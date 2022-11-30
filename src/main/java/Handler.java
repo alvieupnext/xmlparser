@@ -133,7 +133,6 @@ public class Handler extends DefaultHandler {
             }
             authorsString = removeLastChar(authorsString) + "]";
             String [] inproceedingString = {
-                    currentInproceeding.getClass().toString(),
                     currentInproceeding.getKey(),
                     authorsString,
                     currentInproceeding.getTitle(),
@@ -152,7 +151,6 @@ public class Handler extends DefaultHandler {
             }
             editorsString = removeLastChar(editorsString) + "]";
             String [] proceedingsString = {
-                    currentProceeding.getClass().toString(),
                     currentProceeding.getKey(),
                     editorsString,
                     currentProceeding.getTitle(),
@@ -171,7 +169,6 @@ public class Handler extends DefaultHandler {
             }
             authorsString = removeLastChar(authorsString) + "]";
             String[] articleString = {
-                    currentArticle.getClass().toString(),
                     currentArticle.getKey(),
                     authorsString,
                     currentArticle.getTitle(),
@@ -186,11 +183,11 @@ public class Handler extends DefaultHandler {
     }
 
     public void initializeHeaders() {
-        String[] articleHeader = {"Class Name", "key","Authors", "Title", "Journal", "Volume", "Number", "Year"};
+        String[] articleHeader = {"key","authors", "title", "journal", "volume", "number", "year"};
         articleList.add(articleHeader);
-        String[] inproceedingHeader = {"Class Name", "key", "Authors", "Title", "Pages", "Year", "Booktitle"};
+        String[] inproceedingHeader = {"key", "authors", "title", "pages", "year", "booktitle"};
         inproceedingsList.add(inproceedingHeader);
-        String[] proceedingsHeader = {"Class Name", "key", "Editors", "Title", "Booktitle", "Publisher", "Volume", "Year"};
+        String[] proceedingsHeader = {"key", "editors", "title", "booktitle", "publisher", "volume", "year"};
         proceedingsList.add(proceedingsHeader);
     }
 
