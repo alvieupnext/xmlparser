@@ -10,7 +10,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class Project {
     public static void main(String[] args) {
@@ -91,15 +94,71 @@ public class Project {
 //                System.out.println(result);
                 //H1
                 //First step, get all authors that published to the ICDT in 2020
-                List<Inproceedings> authors = session
+                List<Inproceedings> authorGroups = session
                         .query(Inproceedings.class)
                         .whereEquals("booktitle", "ICDT")
                         .andAlso()
                         .whereEquals("year", 2020)
-                        .ofType(Inproceedings.class)
-                        .take(10)
                         .toList();
+                List<String> authors = new ArrayList<String>();
+                for (Inproceedings authorGroup : authorGroups ){
+                    for (String name: authorGroup.getAuthors()){
+                        authors.add(name);
+                    }
+                }
                 System.out.println(authors);
+                List<Inproceedings> confArticles = session
+                        .query(Inproceedings.class)
+                        .containsAny("authors", authors)
+                        .toList();
+                List<Article> jourArticles = session
+                        .query(Article.class)
+                        .containsAny("authors", authors)
+                        .toList();
+                HashMap<String, HashMap<String, Integer>> frequentCoAuthors = new HashMap<>();
+                //get co-author count from conference article
+                for (Inproceedings authorGroup : confArticles) {
+                    List<String> articleAuthors = authorGroup.getAuthors();
+                    //authors from the ICDT in 2020 posted in this article
+                    List<String> mutualAuthors = articleAuthors.stream().distinct().filter(authors::contains).collect(Collectors.toList());
+                    for (String author : mutualAuthors) {
+                        HashMap<String, Integer> coAuthorCount = frequentCoAuthors.getOrDefault(author, new HashMap<>());
+                        for (String name : articleAuthors) {
+                            //if name does not correspond to the author
+                            if (!name.equalsIgnoreCase(author)) {
+                                Integer currentCount = coAuthorCount.getOrDefault(name, 0);
+                                coAuthorCount.put(name, currentCount + 1);
+                            }
+                        }
+                        frequentCoAuthors.put(author, coAuthorCount);
+                    }
+                }
+                for (Article authorGroup : jourArticles) {
+                    List<String> articleAuthors = authorGroup.getAuthors();
+                    //authors from the ICDT in 2020 posted in this article
+                    List<String> mutualAuthors = articleAuthors.stream().distinct().filter(authors::contains).collect(Collectors.toList());
+                    for (String author : mutualAuthors) {
+                        HashMap<String, Integer> coAuthorCount = frequentCoAuthors.getOrDefault(author, new HashMap<>());
+                        for (String name : articleAuthors) {
+                            //if name does not correspond to the author
+                            if (!name.equalsIgnoreCase(author)) {
+                                Integer currentCount = coAuthorCount.getOrDefault(name, 0);
+                                coAuthorCount.put(name, currentCount + 1);
+                            }
+                        }
+                        frequentCoAuthors.put(author, coAuthorCount);
+                    }
+                }
+                HashMap<String, Map<String, Integer>> bestCoAuthor = new HashMap<>();
+                for (String author: frequentCoAuthors.keySet()){
+                    HashMap<String, Integer> count = frequentCoAuthors.get(author);
+                    Integer max = Collections.max(count.values());
+                    Map<String, Integer> result = count.entrySet().stream()
+                            .filter(map -> map.getValue() == max)
+                            .collect(Collectors.toMap(map -> map.getKey(), map -> map.getValue()));
+                    bestCoAuthor.put(author, result);
+                }
+                System.out.println(bestCoAuthor);
             }
 
         }
