@@ -31,7 +31,7 @@ public class XMLToCSV {
         handler.initializeHeaders();
         saxParser.parse("dblp.xml", handler);
         makeFile("Article.csv", handler.getArticleList());
-        makeFile("Inprocecdings.csv", handler.getInproceedingsList());
+        makeFile("Inproceedings.csv", handler.getInproceedingsList());
         makeFile("Proceedings.csv", handler.getProceedingsList());
         /*List<Inproceedings> inproceedings = handler.getInproceedingsList();
         inproceedings.forEach(System.out::println);
