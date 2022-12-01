@@ -29,17 +29,35 @@ public class Project {
 //                System.out.println(E1);
 
                 // E2
-                List<String> E2 = session
-                        .query(Article.class)
-                        .containsAny("Authors", Collections.singletonList("Martin Grohe"))
+//                List<String> E2 = session
+//                        .query(Article.class)
+//                        .containsAny("Authors", Collections.singletonList("Martin Grohe"))
+//                        .andAlso()
+//                        .whereEquals("Journal", "Theory Comput. Syst.")
+//                        .skip(0)
+//                        .selectFields(String.class, "Title")
+//                        .orderByDescending("Title")
+//                        .toList();
+//                Collections.reverse(E2);
+//                System.out.println(E2);
+
+                // M4
+                List<String> M4 = session
+                        .query(Inproceedings.class)
+                        .whereRegex("Booktitle", "SIGMOD")
                         .andAlso()
-                        .whereEquals("Journal", "Theory Comput. Syst.")
-                        .skip(0)
+                        .whereGreaterThan("Authors.Count", 10)
                         .selectFields(String.class, "Title")
-                        .orderByDescending("Title")
                         .toList();
-                Collections.reverse(E2);
-                System.out.println(E2);
+                System.out.println(M4);
+
+                // M5
+//                Integer M5 = session
+//                        .query(Proceedings.class)
+//                        .whereEquals("Booktitle", "PODS")
+//                        .selectFields(String.class, "Title")
+//                        .count();
+//                System.out.println(M5);
             }
         }
     }
