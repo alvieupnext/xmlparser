@@ -47,7 +47,7 @@ public class Project {
 //                System.out.println(E2);
                 //M1
 //                int M1 = session
-//                        .query(Proceedings.class)
+//                        .query(Inproceedings.class)
 //                        .whereEquals("booktitle", "SIGMOD Conference")
 //                        .andAlso()
 //                        .whereEquals("year", 2022)
@@ -71,27 +71,27 @@ public class Project {
 //                         .count();
 //                 System.out.println(M2);
                  // M3
-                 List<CountByConference> publications = session
-                         .query(Inproceedings.class)
-                         .groupBy("year", "booktitle")
-                         .selectCount()
-                         .whereEquals("booktitle","CIDR")
-                         .ofType(CountByConference.class)
-                         .toList();
-                List<Integer> numbers = new ArrayList<Integer>();
-                for (CountByConference publication: publications){
-                    numbers.add(publication.Count);
-                }
-                Collections.sort(numbers);
-                int result = 0;
-                //median calculation
-                if (numbers.size() % 2 == 0){
-                    result = (numbers.get(numbers.size()/2-1) + numbers.get(numbers.size()/2))/2;
-                }
-                else{
-                    result = numbers.get((numbers.size() + 1)/2 - 1);
-                }
-                System.out.println(result);
+//                 List<CountByConference> publications = session
+//                         .query(Inproceedings.class)
+//                         .groupBy("year", "booktitle")
+//                         .selectCount()
+//                         .whereEquals("booktitle","CIDR")
+//                         .ofType(CountByConference.class)
+//                         .toList();
+//                List<Integer> numbers = new ArrayList<Integer>();
+//                for (CountByConference publication: publications){
+//                    numbers.add(publication.Count);
+//                }
+//                Collections.sort(numbers);
+//                int result = 0;
+//                //median calculation
+//                if (numbers.size() % 2 == 0){
+//                    result = (numbers.get(numbers.size()/2-1) + numbers.get(numbers.size()/2))/2;
+//                }
+//                else{
+//                    result = numbers.get((numbers.size() + 1)/2 - 1);
+//                }
+//                System.out.println(result);
                 //H1
                 //First step, get all authors that published to the ICDT in 2020
 //                List<Inproceedings> authorGroups = session
