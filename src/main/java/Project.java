@@ -90,15 +90,27 @@ public class Project {
 //                    result = numbers.get((numbers.size() + 1)/2 - 1);
 //                }
                 //M5
-                CountByAuthorAndConference M5 = session.advanced().documentQuery(Proceedings.class)
+                int most_frequent_count = session.advanced().documentQuery(Proceedings.class)
                         .groupBy("editors[]", "booktitle")
                         .selectKey("editors[]", "editor")
                         .selectKey("booktitle")
                         .selectCount()
                         .whereEquals("booktitle", "PODS")
-                        .orderByDescending("count", OrderingType.DOUBLE)
+                        .orderByDescending("count")
                         .ofType(CountByAuthorAndConference.class)
-                        .firstOrDefault();
+                        .firstOrDefault()
+                        .getCount()
+                        ;
+                List<CountByAuthorAndConference> M5 = session.advanced().documentQuery(Proceedings.class)
+                        .groupBy("editors[]", "booktitle")
+                        .selectKey("editors[]", "editor")
+                        .selectKey("booktitle")
+                        .selectCount()
+                        .whereEquals("booktitle", "PODS")
+                        .andAlso()
+                        .whereEquals("count", most_frequent_count)
+                        .ofType(CountByAuthorAndConference.class)
+                        .toList();
                 System.out.println(M5);
 
                 //M6
