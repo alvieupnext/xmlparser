@@ -1,18 +1,16 @@
-import com.google.common.collect.Lists;
 import net.ravendb.client.documents.DocumentStore;
 import net.ravendb.client.documents.IDocumentStore;
 import net.ravendb.client.documents.conventions.DocumentConventions;
-import net.ravendb.client.documents.queries.QueryData;
+import net.ravendb.client.documents.indexes.IndexDefinition;
+import net.ravendb.client.documents.operations.indexes.PutIndexesOperation;
+import net.ravendb.client.documents.queries.Query;
 import net.ravendb.client.documents.session.IDocumentSession;
+import net.ravendb.client.documents.session.OrderingType;
 
-import java.lang.reflect.Array;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.function.Function;
+import static net.ravendb.client.documents.queries.GroupBy.array;
+import static net.ravendb.client.documents.queries.GroupBy.field;
+
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class Project {
@@ -92,6 +90,68 @@ public class Project {
 //                    result = numbers.get((numbers.size() + 1)/2 - 1);
 //                }
 //                System.out.println(result);
+//                IndexDefinition indexDefinition = new IndexDefinition();
+//                indexDefinition.setName("Articles/Grouped");
+//                HashSet<String> maps = new HashSet<>();
+////                maps.add("docs.Articles.Select(c => new {title = c.title})");
+////                maps.add("docs.Inproceedings.Select(c => new {title = c.title})");
+//                maps.add("docs.Articles.Select(c => new {title = c.title})");
+//                maps.add("docs.Inproceedings.Select(c => new {title = c.title})");
+//                indexDefinition.setMaps(maps);
+//                store.maintenance().send(new PutIndexesOperation(indexDefinition));
+                //M6
+//                List<Inproceedings> authorCount = session
+//                        .query(Inproceedings.class, Query.index("Articles/Grouped"))
+////                        .groupBy(array("authors[]"))
+////                        .selectKey("key()", "author")
+////                        .selectCount()
+//                        .skip(3)
+//                        .take(10)
+//                        .toList();
+//                System.out.println(authorCount);
+
+                //M6
+                //20 people is the sweetspot for performance and validity, same answer gets returned when setting this value to 10000
+                int amountOfPeople = 20;
+                List<CountByAuthor> articleBest = session.advanced().documentQuery(Article.class)
+                        .groupBy("authors[]")
+                        .selectKey("authors[]", "author")
+                        .selectCount()
+                        .ofType(CountByAuthor.class)
+                        .orderByDescending("count", OrderingType.DOUBLE)
+//                        .whereEquals("author", "Philip S. Yu")
+                        .take(amountOfPeople).toList();
+                System.out.println(articleBest);
+                List<CountByAuthor> inproceedingsBest = session.advanced().documentQuery(Inproceedings.class)
+                        .groupBy("authors[]")
+                        .selectKey("authors[]", "author")
+                        .selectCount()
+                        .ofType(CountByAuthor.class)
+                        .orderByDescending("count", OrderingType.DOUBLE)
+//                        .whereEquals("author", "Philip S. Yu")
+                        .take(amountOfPeople).toList();
+                System.out.println(inproceedingsBest);
+                HashMap<String, Integer> authorCount = new HashMap<>();
+                //populate hashmap with the best authors in Articles
+                for (CountByAuthor article: articleBest){
+                    authorCount.put(article.getAuthor(), article.getCount());
+                }
+                for (CountByAuthor article: inproceedingsBest){
+                    int currentArticleCount = authorCount.getOrDefault(article.getAuthor(), 0);
+                    authorCount.put(article.getAuthor(), article.getCount() + currentArticleCount);
+                }
+                System.out.println(authorCount);
+                Integer max = Collections.max(authorCount.values());
+                System.out.println(max);
+                List<String> bestPublished = authorCount.keySet().stream().filter(author -> authorCount.get(author) == max).collect(Collectors.toList());
+                System.out.println(bestPublished);
+                List<String> conferences = session.query(Inproceedings.class)
+                        .whereIn("authors", Collections.singletonList(bestPublished))
+                        .selectFields(String.class, "booktitle")
+                        .distinct()
+                        .toList();
+                System.out.println(conferences);
+
                 //H1
                 //First step, get all authors that published to the ICDT in 2020
 //                List<Inproceedings> authorGroups = session
