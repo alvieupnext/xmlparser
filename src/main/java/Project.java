@@ -24,13 +24,13 @@ public class Project {
 
             try (IDocumentSession session = store.openSession()) {
                 // E1
-//                List<String> E1 = session
+//                String E1 = session
 //                        .query(Proceedings.class)
 //                        .whereEquals("booktitle", "PODS")
-//                        .skip(0).take(1)
+//                         .take(1)
 //                        .selectFields(String.class, "publisher")
-//                        .toList();
-//                System.out.println(E1.get(0));
+//                        .firstOrDefault();
+//                System.out.println(E1);
 
                 // E2
 //                List<String> E2 = session
@@ -69,7 +69,7 @@ public class Project {
 //                         .count();
 //                 System.out.println(M2);
                  // M3
-//                 List<CountByConference> publications = session
+//                 List<Count> publications = session
 //                         .query(Inproceedings.class)
 //                         .groupBy("year", "booktitle")
 //                         .selectCount()
@@ -77,7 +77,7 @@ public class Project {
 //                         .ofType(CountByConference.class)
 //                         .toList();
 //                List<Integer> numbers = new ArrayList<Integer>();
-//                for (CountByConference publication: publications){
+//                for (Count publication: publications){
 //                    numbers.add(publication.Count);
 //                }
 //                Collections.sort(numbers);

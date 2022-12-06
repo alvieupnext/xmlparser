@@ -1,4 +1,4 @@
-public class CountByConference {
+public class Count {
     int Count;
 
     public int getCount() {
