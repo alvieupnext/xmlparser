@@ -1,7 +1,6 @@
-public class CountByAuthorAndConference  {
+public class CountByEditor {
     private String editor;
     private int count;
-    private String booktitle;
 
     public String getEditor() {
         return editor;
@@ -24,15 +23,6 @@ public class CountByAuthorAndConference  {
         return "CountByAuthorAndConference{" +
                 "editor='" + editor + '\'' +
                 ", count=" + count +
-                ", booktitle='" + booktitle + '\'' +
                 '}';
-    }
-
-    public String getBooktitle() {
-        return booktitle;
-    }
-
-    public void setBooktitle(String booktitle) {
-        this.booktitle = booktitle;
     }
 }
