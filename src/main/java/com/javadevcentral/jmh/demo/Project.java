@@ -32,7 +32,7 @@ public class Project {
     }
 
     public Integer M1(IDocumentSession session) {
-        return session.query(Proceedings.class)
+        return session.query(Inproceedings.class)
                 .whereEquals("booktitle", "SIGMOD Conference")
                 .andAlso()
                 .whereEquals("year", 2022)
@@ -209,6 +209,64 @@ public class Project {
                 return bestCoAuthor;
     }
 
+    /**
+     * Gets a set of authors that have collaborated with a given author
+     * @param author The author.
+     * @return A set of co-authors.
+     */
+    public static Set<String> getCoAuthors(String author, IDocumentSession session) {
+        Set<String> coAuthors = new HashSet<>();
+        List<Authors> coAuthorsArt = session
+                .query(Article.class)
+                .containsAny("authors", Collections.singletonList(author))
+                .selectFields(Authors.class, "authors")
+                .toList();
+        List<Authors> coAuthorsInp = session
+                .query(Inproceedings.class)
+                .containsAny("authors", Collections.singletonList(author))
+                .selectFields(Authors.class, "authors")
+                .toList();
+        for (Authors authorObject: coAuthorsArt) {
+            coAuthors.addAll(authorObject.getAuthors());
+        }
+        for (Authors authorObject: coAuthorsInp) {
+            coAuthors.addAll(authorObject.getAuthors());
+        }
+        coAuthors.remove(author);
+        return coAuthors;
+    }
+
+    public Integer H2(IDocumentSession session) {
+        session.advanced().setMaxNumberOfRequestsPerSession(150);
+        class Pair {
+            final String first;
+            final Integer second;
+            public Pair(String first, Integer second) {
+                this.first = first;
+                this.second = second;
+            }
+        }
+        String erdos = "Paul Erdös";
+        Queue<Pair> q = new LinkedList<>();
+        q.add(new Pair("Dan Suciu", 1));
+        Integer result = 0;
+        while (!q.isEmpty()) {
+            Pair shortest = q.poll();
+            String authorName = shortest.first;
+            Integer length = shortest.second;
+            Set<String> coAuthors = getCoAuthors(authorName, session);
+            if (coAuthors.contains(erdos)) {
+                result = length;
+                break;
+            } else {
+                for (String coAuthor: coAuthors) {
+                    q.add(new Pair(coAuthor, length + 1));
+                }
+            }
+        }
+        return result;
+    }
+
     public static void main(String[] args){
         String dbUrl = "http://127.0.0.1:8080";
         String dbName = "DBLP";
@@ -219,7 +277,7 @@ public class Project {
             store.initialize();
             try (IDocumentSession currentSession = store.openSession()) {
                 Project p = new Project();
-                System.out.println(p.M3(currentSession));
+                System.out.println(p.H2(currentSession));
             }
         }
     }

@@ -44,7 +44,7 @@ import java.util.concurrent.TimeUnit;
 @OutputTimeUnit(TimeUnit.MILLISECONDS)
 @Warmup(iterations = 1)
 @Fork(value = 1)
-@Measurement(iterations = 3)
+@Measurement(iterations = 15)
 public class QueryBenchmark {
 
     @org.openjdk.jmh.annotations.State(Scope.Thread)
@@ -52,7 +52,7 @@ public class QueryBenchmark {
         IDocumentSession session;
         Project p;
         String dbUrl = "http://127.0.0.1:8080";
-        String dbName = "Project";
+        String dbName = "DBLP";
 
         @Setup(Level.Trial)
         public void setup() {
@@ -173,6 +173,19 @@ public class QueryBenchmark {
             store.initialize();
             try (IDocumentSession currentSession = store.openSession()) {
                 b.consume(state.p.H1(currentSession));
+            }
+        }
+    }
+
+    @Benchmark
+    public void H2(State state, Blackhole b) {
+        try (IDocumentStore store = new DocumentStore(
+                new String[]{state.dbUrl}, state.dbName)
+        ) {
+            DocumentConventions conventions = store.getConventions();
+            store.initialize();
+            try (IDocumentSession currentSession = store.openSession()) {
+                b.consume(state.p.H2(currentSession));
             }
         }
     }
