@@ -57,21 +57,17 @@ public class Project {
     }
 
     public Integer M3(IDocumentSession session) {
-        List<Count> publications = session
+        List<Integer> numbers = session
                 .query(Inproceedings.class)
                 .groupBy("year", "booktitle")
                 .selectCount()
                 .whereEquals("booktitle","CIDR")
-                .ofType(Count.class)
+                .selectFields(Integer.class, "Count")
                 .toList();
-        List<Integer> numbers = new ArrayList<Integer>();
-        for (Count publication: publications){
-            numbers.add(publication.Count);
-        }
         Collections.sort(numbers);
         //median calculation
         if (numbers.size() % 2 == 0){
-            return numbers.get(numbers.size()/2-1) + numbers.get(numbers.size()/2)/2;
+            return (numbers.get(numbers.size()/2-1) + numbers.get(numbers.size()/2))/2;
         }
         else{
             return numbers.get((numbers.size() + 1)/2 - 1);
@@ -211,5 +207,20 @@ public class Project {
                     bestCoAuthor.put(author, result);
                 }
                 return bestCoAuthor;
+    }
+
+    public static void main(String[] args){
+        String dbUrl = "http://127.0.0.1:8080";
+        String dbName = "DBLP";
+        try (IDocumentStore store = new DocumentStore(
+                new String[]{dbUrl}, dbName)
+        ) {
+            DocumentConventions conventions = store.getConventions();
+            store.initialize();
+            try (IDocumentSession currentSession = store.openSession()) {
+                Project p = new Project();
+                System.out.println(p.M3(currentSession));
+            }
+        }
     }
 }
