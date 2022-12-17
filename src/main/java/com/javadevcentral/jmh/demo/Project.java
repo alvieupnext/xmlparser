@@ -73,7 +73,8 @@ public class Project {
     }
 
     public List<Integer> M4(IDocumentSession session) {
-        List<CountByBooktitleYearAuthorsCount> M4 = session.query(Inproceedings.class).groupBy("booktitle", "year", "authors.Count")
+        List<CountByBooktitleYearAuthorsCount> countByBooktitleYearAuthorsCount = session.query(Inproceedings.class)
+                .groupBy("booktitle", "year", "authors.Count")
                 .selectKey("booktitle")
                 .selectKey("year")
                 .selectKey("authors.Count", "authorscount")
@@ -81,11 +82,22 @@ public class Project {
                 .whereRegex("booktitle", "SIGMOD")
                 .andAlso()
                 .whereGreaterThan("authors.Count", 10)
-                .orderByDescending("count")
+                .orderByDescending("count", OrderingType.DOUBLE)
                 .ofType(CountByBooktitleYearAuthorsCount.class)
                 .toList();
-        int max = M4.get(0).getCount();
-        return M4.stream().filter(c -> c.getCount() == max).map(CountByBooktitleYearAuthorsCount::getYear).collect(Collectors.toList());
+        //create new hashmap to keep track of all publication counts per year (as the CountByBooktitleYearAuthorsCount list will have separate entities for authorCounts 11, 12,13, ...)
+        HashMap<Integer, Integer> mostPublications = new HashMap<>();
+        for (CountByBooktitleYearAuthorsCount c: countByBooktitleYearAuthorsCount){
+            Integer previousCount = mostPublications.getOrDefault(c.getYear(), 0);
+            mostPublications.put(c.getYear(), previousCount + c.getCount());
+        }
+        Integer max = Collections.max(mostPublications.values());
+        List<Integer> result = mostPublications.entrySet().stream()
+                .filter(map -> Objects.equals(map.getValue(), max))
+                .map(map -> map.getKey())
+                .collect(Collectors.toList());
+        System.out.println(max);
+        return result;
     }
 
     public List<CountByEditor> M5(IDocumentSession session) {
@@ -318,12 +330,12 @@ public class Project {
 //                System.out.println(p.E2(currentSession));
 //                System.out.println("M1");
 //                System.out.println(p.M1(currentSession));
-                System.out.println("M2");
-                System.out.println(p.M2(currentSession));
+//                System.out.println("M2");
+//                System.out.println(p.M2(currentSession));
 //                System.out.println("M3");
 //                System.out.println(p.M3(currentSession));
-//                System.out.println("M4");
-//                System.out.println(p.M4(currentSession));
+                System.out.println("M4");
+                System.out.println(p.M4(currentSession));
 //                System.out.println("M5");
 //                System.out.println(p.M5(currentSession));
 //                System.out.println("M6");
