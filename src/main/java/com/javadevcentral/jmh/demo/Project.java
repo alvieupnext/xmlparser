@@ -42,7 +42,7 @@ public class Project {
     public Integer M2(IDocumentSession session) {
         String oldest_journal =
                 session.query(Article.class)
-                        .orderBy("Year")
+                        .orderBy("year")
                         .selectFields(String.class, "journal")
                         //skip the three error Articles
                         .skip(3)
@@ -209,11 +209,6 @@ public class Project {
                 return bestCoAuthor;
     }
 
-    /**
-     * Gets a set of authors that have collaborated with a given author
-     * @param author The author.
-     * @return A set of co-authors.
-     */
     public static Set<String> getCoAuthors(String author, IDocumentSession session) {
         Set<String> coAuthors = new HashSet<>();
         List<Authors> coAuthorsArt = session
@@ -317,26 +312,26 @@ public class Project {
             store.initialize();
             try (IDocumentSession currentSession = store.openSession()) {
                 Project p = new Project();
-                System.out.println("E1");
-                System.out.println(p.E1(currentSession));
-                System.out.println("E2");
-                System.out.println(p.E2(currentSession));
-                System.out.println("M1");
-                System.out.println(p.M1(currentSession));
+//                System.out.println("E1");
+//                System.out.println(p.E1(currentSession));
+//                System.out.println("E2");
+//                System.out.println(p.E2(currentSession));
+//                System.out.println("M1");
+//                System.out.println(p.M1(currentSession));
                 System.out.println("M2");
                 System.out.println(p.M2(currentSession));
-                System.out.println("M3");
-                System.out.println(p.M3(currentSession));
-                System.out.println("M4");
-                System.out.println(p.M4(currentSession));
-                System.out.println("M5");
-                System.out.println(p.M5(currentSession));
-                System.out.println("M6");
-                System.out.println(p.M6(currentSession));
-                System.out.println("H1");
-                System.out.println(p.H1(currentSession));
-                System.out.println("H2");
-                System.out.println(p.H2(currentSession));
+//                System.out.println("M3");
+//                System.out.println(p.M3(currentSession));
+//                System.out.println("M4");
+//                System.out.println(p.M4(currentSession));
+//                System.out.println("M5");
+//                System.out.println(p.M5(currentSession));
+//                System.out.println("M6");
+//                System.out.println(p.M6(currentSession));
+//                System.out.println("H1");
+//                System.out.println(p.H1(currentSession));
+//                System.out.println("H2");
+//                System.out.println(p.H2(currentSession));
                 //Uncomment to see result, commented because it doesn't make the previous queries visible
 //                System.out.println("B2");
 //                System.out.println(p.B2(currentSession));
