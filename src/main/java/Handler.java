@@ -7,8 +7,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Handler extends DefaultHandler {
-
+    //Keeps track of current value
     private StringBuilder currentValue = new StringBuilder();
+    //Lists for the different kind of articles
     private List<String[]> inproceedingsList = new ArrayList<>();
     private List<String[]> articleList = new ArrayList<>();
     private List<String[]> proceedingsList = new ArrayList<>();
@@ -29,6 +30,7 @@ public class Handler extends DefaultHandler {
     Article currentArticle;
     Proceedings currentProceeding;
 
+    //getters for the list
     public List<String[]> getInproceedingsList() { return inproceedingsList; }
 
     public List<String[]> getArticleList() {
@@ -59,6 +61,7 @@ public class Handler extends DefaultHandler {
             current = "proceedings";
         }
         if (qName.equalsIgnoreCase("article")){
+            //new article
             currentArticle = new Article();
             currentArticle.setKey(attributes.getValue("key"));
             current = "article";
@@ -68,6 +71,7 @@ public class Handler extends DefaultHandler {
     @Override
     public void endElement(String uri, String localName, String qName)
             throws SAXException {
+        //depending on current, update the right value
         if (current == "inproceedings"){
             if (qName.equalsIgnoreCase("author")){
                 currentInproceeding.addAuthor(currentValue.toString());
@@ -125,13 +129,15 @@ public class Handler extends DefaultHandler {
                 currentArticle.setYear(Integer.parseInt(currentValue.toString()));
             }
         }
-        // end of article
+        // end of conference article
         if (qName.equalsIgnoreCase("inproceedings")) {
+            //this structure will save the authors as a list of strings
             String authorsString = "[";
             for (int i = 0; i < currentInproceeding.getAuthors().size(); i++){
                 authorsString  = authorsString + "\"" + currentInproceeding.getAuthors().get(i).replace("\"", "\'") + "\"" + ",";
             }
             authorsString = removeLastChar(authorsString) + "]";
+            //serialize the inproceeding
             String [] inproceedingString = {
                     currentInproceeding.getKey(),
                     authorsString,
@@ -144,7 +150,9 @@ public class Handler extends DefaultHandler {
             System.out.println(inproceedingString);
             current = "none";
         }
+        //end of conference proceedings
         if (qName.equalsIgnoreCase("proceedings")) {
+            //this structure will save the editors as a list of strings
             String editorsString = "[";
             for (int i = 0; i < currentProceeding.getEditors().size(); i++){
                 editorsString = editorsString + "\"" + currentProceeding.getEditors().get(i).replace("\"", "\'") + "\"" + ",";
@@ -159,15 +167,18 @@ public class Handler extends DefaultHandler {
                     currentProceeding.getVolume(),
                     Integer.toString(currentProceeding.getYear())
             };
+            //serialize the proceeding
             proceedingsList.add(proceedingsString);
             current = "none";
         }
         if (qName.equalsIgnoreCase("article")){
+            //this structure will save the authors as a list of strings
             String authorsString = "[";
             for (int i = 0; i < currentArticle.getAuthors().size(); i++){
                 authorsString  = authorsString + "\"" + currentArticle.getAuthors().get(i).replace("\"", "\'") + "\"" + ",";
             }
             authorsString = removeLastChar(authorsString) + "]";
+            //serialize the article
             String[] articleString = {
                     currentArticle.getKey(),
                     authorsString,
@@ -183,6 +194,7 @@ public class Handler extends DefaultHandler {
     }
 
     public void initializeHeaders() {
+        //initialize the csv headers and add them to the list
         String[] articleHeader = {"key","authors", "title", "journal", "volume", "number", "year"};
         articleList.add(articleHeader);
         String[] inproceedingHeader = {"key", "authors", "title", "pages", "year", "booktitle"};

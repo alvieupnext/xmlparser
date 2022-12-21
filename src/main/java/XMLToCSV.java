@@ -8,6 +8,11 @@ import java.io.File;
 import java.io.FileWriter;
 
 public class XMLToCSV {
+    /**\
+     * makeFile takes the following and creates a new csv.
+     * @param fileName
+     * @param listOfElements
+     */
     public static void makeFile(String fileName, List<String[]> listOfElements) {
         File myFile = new File(fileName);
         try {
@@ -23,22 +28,21 @@ public class XMLToCSV {
             e.printStackTrace();
         }
     }
+    //Run with the following JVM arguments -DentityExpansionLimit=10000000 -Xmx6g
     public static void main(String[] args) throws ParserConfigurationException, IOException, SAXException {
         SAXParserFactory factory = SAXParserFactory.newInstance();
+        //Set Validating to true (reads the dblp.dtd and makes sure all characters are converted correctly)
         factory.setValidating(true);
+        //use the SAXParser
         SAXParser saxParser = factory.newSAXParser();
         Handler handler = new Handler();
+        //add the headers at the beginning of the lists
         handler.initializeHeaders();
+        //parse the xml
         saxParser.parse("dblp.xml", handler);
+        //after parsing, store create csvs from the lists
         makeFile("Article.csv", handler.getArticleList());
         makeFile("Inproceedings.csv", handler.getInproceedingsList());
         makeFile("Proceedings.csv", handler.getProceedingsList());
-        /*List<Inproceedings> inproceedings = handler.getInproceedingsList();
-        inproceedings.forEach(System.out::println);
-        List<Proceedings> proceedings = handler.getProceedingsList();
-        proceedings.forEach(System.out::println);
-        List <Article> articles = handler.getArticleList();
-        articles.forEach(System.out::println);
-         */
     }
 }
