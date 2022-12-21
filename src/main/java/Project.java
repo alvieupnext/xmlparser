@@ -227,7 +227,8 @@ public class Project {
 
     /**
      * Gets a set of authors that have collaborated with a given author
-     * @param author The author.
+     *
+     * @param author  The author.
      * @param session The database session.
      * @return A set of co-authors.
      */
@@ -256,16 +257,6 @@ public class Project {
     public Integer H2(IDocumentSession session) {
         //Increase max number of requests
         session.advanced().setMaxNumberOfRequestsPerSession(200);
-        //Implement pair class to allow queueing
-        class Pair {
-            final String first;
-            final Integer second;
-
-            public Pair(String first, Integer second) {
-                this.first = first;
-                this.second = second;
-            }
-        }
         String erdos = "Paul Erdös";
         //Create new queue
         Queue<Pair> q = new LinkedList<>();
@@ -309,9 +300,48 @@ public class Project {
         public String toString() {
             return "Pair{" +
                     "Author='" + first + '\'' +
-                    ",Ketsman =" + second +
+                    ",Number =" + second +
                     '}';
         }
+    }
+
+    //Bonus Query: get the distance between an author and themself via collaborations. A low distance can indicate the existance of author communities (where the same people collaborate often)
+    public Integer B1(String author, IDocumentSession session) {
+        //Increase max number of requests
+        session.advanced().setMaxNumberOfRequestsPerSession(300000);
+        //Create a queue
+        Queue<Pair> q = new LinkedList<>();
+        //Get all co-authors of the author
+        Set<String> coAuthors = getCoAuthors(author, session);
+        //Get the coAuthors of the coAuthors
+        Set<String> coCoAuthorsAll = new HashSet<>();
+        for (String coAuthor : coAuthors) {
+            Set<String> coCoAuthors = getCoAuthors(coAuthor, session);
+            coCoAuthorsAll.addAll(coCoAuthors);
+        }
+        coCoAuthorsAll.remove(author);
+        Integer result = 0;
+        //Enqueue all coCoAuthors with distance 2
+        for (String coCoAuthor : coCoAuthorsAll) {
+            q.add(new Pair(coCoAuthor, 2));
+        }
+        while (!q.isEmpty()) {
+            Pair pair = q.poll();
+            String authorName = pair.first;
+            Integer distance = pair.second;
+            // If the authors name matches
+            if (authorName.equalsIgnoreCase(author)) {
+                result = distance;
+                break;
+            } else {
+                //get the co-authors
+                Set<String> coAuth = getCoAuthors(authorName, session);
+                for (String coAuthor : coAuth) {
+                    q.add(new Pair(coAuthor, distance + 1));
+                }
+            }
+        }
+        return result;
     }
 
     //Bonus Query: get all authors that have an Ketsman number lower or equal than 2. (Ketsman number is the same principle as the Erdos number but using Bas Ketsman)
@@ -376,6 +406,9 @@ public class Project {
                 System.out.println(p.H1(currentSession));
                 System.out.println("H2");
                 System.out.println(p.H2(currentSession));
+                //Uncomment to see result, commented because it doesn't make the previous queries visible
+//                System.out.println("B1");
+//                System.out.println(p.B1("P. Paanah", currentSession));
                 //Uncomment to see result, commented because it doesn't make the previous queries visible
 //                System.out.println("B2");
 //                System.out.println(p.B2(currentSession));
