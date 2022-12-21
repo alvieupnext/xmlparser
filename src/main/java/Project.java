@@ -1,14 +1,7 @@
 import net.ravendb.client.documents.DocumentStore;
 import net.ravendb.client.documents.IDocumentStore;
-import net.ravendb.client.documents.conventions.DocumentConventions;
-import net.ravendb.client.documents.indexes.IndexDefinition;
-import net.ravendb.client.documents.operations.indexes.PutIndexesOperation;
-import net.ravendb.client.documents.queries.Query;
 import net.ravendb.client.documents.session.IDocumentSession;
 import net.ravendb.client.documents.session.OrderingType;
-
-import static net.ravendb.client.documents.queries.GroupBy.array;
-import static net.ravendb.client.documents.queries.GroupBy.field;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -95,7 +88,7 @@ public class Project {
         Integer max = Collections.max(mostPublications.values());
         List<Integer> result = mostPublications.entrySet().stream()
                 .filter(map -> Objects.equals(map.getValue(), max))
-                .map(map -> map.getKey())
+                .map(Map.Entry::getKey)
                 .collect(Collectors.toList());
         System.out.println(max);
         return result;
@@ -145,11 +138,11 @@ public class Project {
         }
 
         Integer max = Collections.max(authorCount.values());
-        System.out.println(max);
-        List<String> bestPublished = authorCount.keySet().stream().filter(author -> authorCount.get(author) == max).collect(Collectors.toList());
+//        System.out.println(max);
+        List<String> bestPublished = authorCount.keySet().stream().filter(author -> authorCount.get(author).equals(max)).collect(Collectors.toList());
         System.out.println(bestPublished);
         return session.query(Inproceedings.class)
-                .whereIn("authors", bestPublished)
+                .whereIn("authors", Collections.singleton(bestPublished))
                 .selectFields(String.class, "booktitle")
                 .distinct()
                 .count();
@@ -164,19 +157,23 @@ public class Project {
                 .andAlso()
                 .whereEquals("year", 2020)
                 .toList();
-        List<String> authors = new ArrayList<String>();
+        //These are all the authors
+        List<String> authors = new ArrayList<>();
+        //flatten into singular lists
         for (Inproceedings authorGroup : authorGroups) {
             authors.addAll(authorGroup.getAuthors());
         }
-        System.out.println(authors);
+        //Get Inproceedings to which one of the authors has published
         List<Inproceedings> confArticles = session
                 .query(Inproceedings.class)
-                .containsAny("authors", authors)
+                .containsAny("authors", Collections.singleton(authors))
                 .toList();
+        //Get Articles to which one of the authors has published
         List<Article> jourArticles = session
                 .query(Article.class)
-                .containsAny("authors", authors)
+                .containsAny("authors", Collections.singleton(authors))
                 .toList();
+        //Create a nested hashmap
         HashMap<String, HashMap<String, Integer>> frequentCoAuthors = new HashMap<>();
         //get co-author count from conference article
         for (Inproceedings authorGroup : confArticles) {
@@ -188,10 +185,12 @@ public class Project {
                 for (String name : articleAuthors) {
                     //if name does not correspond to the author
                     if (!name.equalsIgnoreCase(author)) {
+                        //get current count and increment it
                         Integer currentCount = coAuthorCount.getOrDefault(name, 0);
                         coAuthorCount.put(name, currentCount + 1);
                     }
                 }
+                //after you have updated the coAuthor hashmap, update the author hashmap
                 frequentCoAuthors.put(author, coAuthorCount);
             }
         }
@@ -204,13 +203,16 @@ public class Project {
                 for (String name : articleAuthors) {
                     //if name does not correspond to the author
                     if (!name.equalsIgnoreCase(author)) {
+                        //get current count and increment it
                         Integer currentCount = coAuthorCount.getOrDefault(name, 0);
                         coAuthorCount.put(name, currentCount + 1);
                     }
                 }
+                //after you have updated the coAuthor hashmap, update the author hashmap
                 frequentCoAuthors.put(author, coAuthorCount);
             }
         }
+        //Create a new hashmap that tracks the best coAuthor per author.
         HashMap<String, Map<String, Integer>> bestCoAuthor = new HashMap<>();
         for (String author : frequentCoAuthors.keySet()) {
             HashMap<String, Integer> count = frequentCoAuthors.get(author);
@@ -223,6 +225,12 @@ public class Project {
         return bestCoAuthor;
     }
 
+    /**
+     * Gets a set of authors that have collaborated with a given author
+     * @param author The author.
+     * @param session The database session.
+     * @return A set of co-authors.
+     */
     public static Set<String> getCoAuthors(String author, IDocumentSession session) {
         Set<String> coAuthors = new HashSet<>();
         List<Authors> coAuthorsArt = session
@@ -246,7 +254,9 @@ public class Project {
     }
 
     public Integer H2(IDocumentSession session) {
-        session.advanced().setMaxNumberOfRequestsPerSession(150);
+        //Increase max number of requests
+        session.advanced().setMaxNumberOfRequestsPerSession(200);
+        //Implement pair class to allow queueing
         class Pair {
             final String first;
             final Integer second;
@@ -257,18 +267,26 @@ public class Project {
             }
         }
         String erdos = "Paul Erdös";
+        //Create new queue
         Queue<Pair> q = new LinkedList<>();
+        //Add Dan Suciu to the queue
         q.add(new Pair("Dan Suciu", 1));
         Integer result = 0;
+        //While the queue is not empty
         while (!q.isEmpty()) {
+            //get element from queue
             Pair shortest = q.poll();
             String authorName = shortest.first;
             Integer length = shortest.second;
+            //get coAuthors for the author
             Set<String> coAuthors = getCoAuthors(authorName, session);
+            //if any of the coAuthors are erdos
             if (coAuthors.contains(erdos)) {
+                //store length in result, break out the while loop
                 result = length;
                 break;
             } else {
+                //queue every single coAuthor, with an incremented length
                 for (String coAuthor : coAuthors) {
                     q.add(new Pair(coAuthor, length + 1));
                 }
@@ -277,7 +295,8 @@ public class Project {
         return result;
     }
 
-    class Pair {
+    //Pair class that returns an author and it's corresponding Ketsman number
+    static class Pair {
         final String first;
         final Integer second;
 
@@ -297,18 +316,26 @@ public class Project {
 
     //Bonus Query: get all authors that have an Ketsman number lower or equal than 2. (Ketsman number is the same principle as the Erdos number but using Bas Ketsman)
     public List<Pair> B2(IDocumentSession session) {
+        //Increase max number of requests
         session.advanced().setMaxNumberOfRequestsPerSession(300000);
         String ketsman = "Bas Ketsman";
+        //Create a queue
         Queue<Pair> q = new LinkedList<>();
+        //Enqueue ketsman
         q.add(new Pair(ketsman, 0));
+        //Keep a list of all authors with a ketsman number lower or equal than 2.
         List<Pair> LowerOrEq2 = new ArrayList<>();
         while (!q.isEmpty()) {
+            //dequeue element
             Pair pair = q.poll();
             String authorName = pair.first;
             Integer length = pair.second;
+            //Add the pair to the list
             LowerOrEq2.add(pair);
+            //get all co-authors
             Set<String> coAuthors = getCoAuthors(authorName, session);
             for (String coAuthor : coAuthors) {
+                //break if the length surpasses 3.
                 if (length + 1 < 3) {
                     q.add(new Pair(coAuthor, length + 1));
                 } else {
@@ -321,11 +348,11 @@ public class Project {
 
     public static void main(String[] args) {
         String dbUrl = "http://127.0.0.1:8080";
+        //Make sure dbName matches the name that you have given the database
         String dbName = "DBLP";
         try (IDocumentStore store = new DocumentStore(
                 new String[]{dbUrl}, dbName)
         ) {
-            DocumentConventions conventions = store.getConventions();
             store.initialize();
             try (IDocumentSession currentSession = store.openSession()) {
                 Project p = new Project();
